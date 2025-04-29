@@ -33,8 +33,7 @@ RUN mkdir video
 # Define a volume for the video directory to allow external access
 VOLUME /app/video
 
-# Environment variable for TELOXIDE_TOKEN (to be provided at runtime)
-ENV TELOXIDE_TOKEN=""
+# set logging level
 ENV RUST_LOG=info
 
 # Command to run the application
