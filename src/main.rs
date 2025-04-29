@@ -34,6 +34,8 @@ async fn main() {
                     .args([
                         "-f",
                         "best[ext=mp4]",
+                        "--cookies",
+                        "twitter.txt",
                         "-o",
                         &filename,
                         text, // user-provided URL
@@ -44,12 +46,10 @@ async fn main() {
 
                 if success && path.exists() {
                     // Read the file
-                    // let video_data = fs::read(path).expect("Failed to read downloaded video");
                     let video_file = InputFile::file(path.to_path_buf());
 
                     // Send it back
                     bot.send_video(msg.chat.id, video_file)
-                        .caption("📹 Here's your video!")
                         .reply_to(msg.id)
                         .await?;
 
