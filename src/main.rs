@@ -8,8 +8,34 @@ use teloxide::types::InputFile;
 
 #[tokio::main]
 async fn main() {
+    // Initialize logging
     pretty_env_logger::init();
     log::info!("Starting Twitter video downloader bot...");
+
+    // Check TELOXIDE_TOKEN
+    let token = match std::env::var("TELOXIDE_TOKEN") {
+        Ok(token) => {
+            log::info!("TELOXIDE_TOKEN found (length: {})", token.len());
+            token
+        }
+        Err(e) => {
+            log::error!("Failed to read TELOXIDE_TOKEN: {}", e);
+            std::process::exit(1);
+        }
+    };
+
+    // Initialize bot
+    log::info!("Creating bot...");
+    let bot = Bot::new(&token);
+
+    // Test Telegram API connection
+    match bot.get_me().await {
+        Ok(me) => log::info!("Connected to Telegram API. Bot info: {:?}", me),
+        Err(e) => {
+            log::error!("Failed to connect to Telegram API: {}", e);
+            std::process::exit(1);
+        }
+    }
 
     let bot = Bot::from_env();
 
