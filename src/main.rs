@@ -46,9 +46,12 @@ async fn main() {
                     // Send it back
                     bot.send_video(msg.chat.id, video_file)
                         .caption("📹 Here's your video!")
-                        .reply_to(msg)
+                        .reply_to(msg.id)
                         .await?;
 
+                    // delete the processing message after sending back
+                    bot.delete_message(msg.chat.id, processing_msg.id)
+                        .await?;
                 } else {
                     bot.send_message(msg.chat.id, "❌ Failed to download or locate the video.")
                         .reply_to(&msg)
