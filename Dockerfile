@@ -20,7 +20,7 @@ FROM python:3.12-slim
 
 # Install yt-dlp and OpenSSL lib
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libssl3 \
+    libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir -U --pre "yt-dlp[default]"
 
