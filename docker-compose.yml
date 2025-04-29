@@ -8,6 +8,6 @@ services:
       - TELOXIDE_TOKEN=${TELOXIDE_TOKEN}
       - RUST_LOG=info
     volumes:
-      - ./twitter.txt:/app/twitter.txt
-      - ./video:/app/video
+      - ~/tg_bot/twitter.txt:/app/twitter.txt
+      - ~/tg_bot/video:/app/video
     restart: unless-stopped
