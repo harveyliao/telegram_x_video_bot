@@ -1,10 +1,10 @@
+use chrono::Local;
+use std::fs;
+use std::path::Path;
+use std::process::Command;
 use teloxide::prelude::*;
 use teloxide::sugar::request::RequestReplyExt;
 use teloxide::types::InputFile;
-use std::process::Command;
-use std::fs;
-use chrono::Local;
-use std::path::Path;
 
 #[tokio::main]
 async fn main() {
@@ -16,7 +16,9 @@ async fn main() {
     teloxide::repl(bot, |bot: Bot, msg: Message| async move {
         if let Some(text) = msg.text() {
             if text.contains("twitter.com") || text.contains("x.com") {
-                bot.send_message(msg.chat.id, "⏳ Downloading video...").reply_to(&msg).await?;
+                let processing_msg = bot.send_message(msg.chat.id, "⏳ Downloading video...")
+                    .reply_to(&msg)
+                    .await?;
 
                 let now = Local::now();
                 let formatted_time = now.format("%Y-%m-%d_%H-%M-%S");
@@ -30,8 +32,10 @@ async fn main() {
                 // Run yt-dlp command
                 let success = Command::new("yt-dlp")
                     .args([
-                        "-f", "best[ext=mp4]",
-                        "-o", &filename,
+                        "-f",
+                        "best[ext=mp4]",
+                        "-o",
+                        &filename,
                         text, // user-provided URL
                     ])
                     .status()
@@ -65,5 +69,6 @@ async fn main() {
         }
 
         Ok(())
-    }).await;
+    })
+        .await;
 }
