@@ -8,3 +8,5 @@ teloxide = { version = "0.15.0", features = ["macros"] }
 log = "0.4"
 pretty_env_logger = "0.5"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
+chrono = "0.4.40"
+glob = "0.3.2"
