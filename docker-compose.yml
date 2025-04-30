@@ -1,0 +1,13 @@
+services:
+  telegram_x_video_bot:
+    image: telegram_x_video_bot
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - TELOXIDE_TOKEN=${TELOXIDE_TOKEN}
+      - RUST_LOG=info
+    volumes:
+      - ~/tg_bot/twitter.txt:/app/twitter.txt
+      - ~/tg_bot/video:/app/video
+    restart: unless-stopped

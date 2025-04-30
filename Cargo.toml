@@ -1,7 +1,7 @@
 [package]
 name = "telegram_x_video_bot"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
 teloxide = { version = "0.15.0", features = ["macros"] }

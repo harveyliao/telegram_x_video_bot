@@ -1,0 +1,9 @@
+.env
+set_env.ps1
+twitter.txt
+video/*
+target/
+.git/
+.gitignore
+Dockerfile
+*.md
