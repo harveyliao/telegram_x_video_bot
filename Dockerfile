@@ -36,8 +36,5 @@ RUN mkdir video
 # Define a volume for the video directory to allow external access
 VOLUME /app/video
 
-# set logging level
-ENV RUST_LOG=info
-
 # Command to run the application
 CMD ["./telegram_x_video_bot"]
