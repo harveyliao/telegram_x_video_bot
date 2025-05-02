@@ -1,8 +1,6 @@
 name: Build & Deploy Bot
 
-on:
-  push:
-    branches: [docker-deploy]
+on: [push]
 
 jobs:
   build-deploy:
