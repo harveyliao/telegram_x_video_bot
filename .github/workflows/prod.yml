@@ -1,77 +1,37 @@
-name: Build and Push to Docker Hub
+name: Build & Deploy Bot
 
 on:
   push:
-    branches:
-      - master
+    branches: [docker-deploy]
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Cache Rust dependencies
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cargo
-          target/
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: ${{ runner.os }}-cargo-
+      - name: Build Docker Image
+        run: |
+          docker build -t harveyl/telegram_x_video_bot:latest .
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Push to Docker Hub
+        run: |
+          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
+          docker push harveyl/telegram_x_video_bot:latest
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v6
-      with:
-        context: .
-        file: Dockerfile
-        push: true
-        tags: |
-          ${{ secrets.DOCKER_USERNAME }}/telegram_x_video_bot:latest
-          ${{ secrets.DOCKER_USERNAME }}/telegram_x_video_bot:${{ github.sha }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-
-  # deploy:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v2
-
-  #   - name: Log in to Docker Hub
-  #     uses: docker/login-action@v1
-  #     with:
-  #       username: ${{ secrets.DOCKER_USERNAME }}
-  #       password: ${{ secrets.DOCKER_PASSWORD }}
-
-  #   - name: Install sshpass
-  #     run: sudo apt-get install sshpass
-
-  #   - name: Copy docker-compose.yml to droplet
-  #     run: sshpass -v -p ${{ secrets.DROPLET_PASSWORD }} scp -o StrictHostKeyChecking=no docker-compose.yml root@${{ vars.DROPLET_IP }}:~
-
-  #   - name: Deploy
-  #     uses: appleboy/ssh-action@master
-  #     with:
-  #       host: ${{ vars.DROPLET_IP }}
-  #       username: root
-  #       password: ${{ secrets.DROPLET_PASSWORD }}
-  #       script: |
-  #         cd ~
-  #         export POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-  #         docker-compose down
-  #         docker-compose pull
-  #         docker-compose up -d
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /
+            docker-compose pull
+            docker-compose up -d
+      context: .
+      dockerfile: Dockerfile
