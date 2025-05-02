@@ -18,11 +18,16 @@ RUN cargo build --release
 # Stage 2: Create the runtime image
 FROM python:3.12-slim
 
-# Install yt-dlp and OpenSSL lib
+# Install runtime dependencies: yt-dlp needs Python, Teloxide needs OpenSSL
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libssl-dev \
+    libssl3 \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir -U --pre "yt-dlp[default]"
+
+# Create a non-root user and group
+RUN groupadd --system --gid 1001 appuser && \
+    useradd --system --uid 1001 --gid appuser --shell /bin/bash --create-home appuser
 
 # Set working directory
 WORKDIR /app
@@ -30,8 +35,13 @@ WORKDIR /app
 # Copy the compiled binary from the builder stage
 COPY --from=builder /usr/src/app/target/release/telegram_x_video_bot .
 
-# Copy the video directory structure (but not its contents)
-RUN mkdir video
+# Create the video directory and set permissions
+RUN mkdir video && chown -R appuser:appuser /app
+# Set permissions for the binary
+RUN chown appuser:appuser /app/telegram_x_video_bot
+
+# Switch to the non-root user
+USER appuser
 
 # Define a volume for the video directory to allow external access
 VOLUME /app/video
