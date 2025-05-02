@@ -2,7 +2,7 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [ "docker-deploy" ] # Trigger on push to the docker-deploy branch
+    branches: [ main, 'docker-deploy' ] # Trigger on push to the docker-deploy branch
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
