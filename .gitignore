@@ -3,7 +3,11 @@
 # videos downloaded
 /video
 
+# start scripts
+# Windows PowerShell
 set_env.ps1
+# NixOS
+start.sh
 
 # contains TELOXIDE_TOKEN
 .env
