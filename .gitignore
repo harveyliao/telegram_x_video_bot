@@ -1,6 +1,13 @@
 /target
+
+# videos downloaded
 /video
+
 set_env.ps1
+
+# contains TELOXIDE_TOKEN
 .env
+# secret cookie from X
 twitter.txt
+# nix-shell folder
 result
