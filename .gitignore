@@ -13,5 +13,6 @@ start.sh
 .env
 # secret cookie from X
 twitter.txt
+cookie.txt
 # nix-shell folder
 result
