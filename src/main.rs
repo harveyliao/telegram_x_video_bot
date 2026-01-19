@@ -61,7 +61,7 @@ async fn main() {
                         "-f",
                         "best[ext=mp4]",
                         "--cookies",
-                        "twitter.txt",
+                        "cookie.txt",
                         "-o",
                         &filename,
                         text, // user-provided URL
