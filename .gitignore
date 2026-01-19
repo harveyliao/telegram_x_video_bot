@@ -16,3 +16,4 @@ twitter.txt
 cookie.txt
 # nix-shell folder
 result
+secrets/xbot.yaml
