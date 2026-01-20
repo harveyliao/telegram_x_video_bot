@@ -62,36 +62,36 @@ in
     # 提供 yt-dlp / ffmpeg
     path = [ pkgs.yt-dlp pkgs.ffmpeg ];
 
-  }
-  serviceConfig = {
-    User = "xbot";
-    Group = "xbot";
+    serviceConfig = {
+      User = "xbot";
+      Group = "xbot";
 
-    EnvironmentFile = config.sops.templates."xbot.env".path;
+      EnvironmentFile = config.sops.templates."xbot.env".path;
 
-    ExecStart = "${pkgs.xbot}/bin/telegram_x_video_bot";
+      ExecStart = "${pkgs.xbot}/bin/telegram_x_video_bot";
 
-    Restart = "on-failure";
-    RestartSec = 2;
+      Restart = "on-failure";
+      RestartSec = 2;
 
-    StateDirectory = "xbot";
-    CacheDirectory = "xbot";
+      StateDirectory = "xbot";
+      CacheDirectory = "xbot";
 
-    # 关键：给 yt-dlp 一个稳定可写的 HOME / cache
-    Environment = [
-      "HOME=/var/lib/xbot"
-      "XDG_CACHE_HOME=/var/lib/xbot/cache"
-    ];
-    WorkingDirectory = "/var/lib/xbot";
+      # 关键：给 yt-dlp 一个稳定可写的 HOME / cache
+      Environment = [
+        "HOME=/var/lib/xbot"
+        "XDG_CACHE_HOME=/var/lib/xbot/cache"
+      ];
+      WorkingDirectory = "/var/lib/xbot";
 
-    UMask = "0077";
+      UMask = "0077";
 
-    NoNewPrivileges = true;
-    PrivateTmp = true;
-    ProtectSystem = "strict";
-    ProtectHome = true;
+      NoNewPrivileges = true;
+      PrivateTmp = true;
+      ProtectSystem = "strict";
+      ProtectHome = true;
 
-    ReadWritePaths = [ "/var/lib/xbot" videoDir ];
+      ReadWritePaths = [ "/var/lib/xbot" videoDir ];
+    };
   };
 }
 
