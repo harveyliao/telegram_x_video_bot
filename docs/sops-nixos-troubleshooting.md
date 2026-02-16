@@ -88,6 +88,24 @@ nix-shell -p sops --run \
   'sops encrypt --age "age1...,age1..." --filename-override secrets/xbot.yaml secrets/xbot.yaml.raw > secrets/xbot.yaml'
 ```
 
+## For people cloning this repo (own deployment)
+
+If you deploy your own bot instance, do not keep someone else's recipient unless you intentionally want them to decrypt your secrets.
+
+Recommended steps:
+
+1. Add your own recipient(s) to `.sops.yaml`.
+2. Remove the original maintainer recipient(s) from `.sops.yaml`.
+3. Re-encrypt `secrets/xbot.yaml` so only your private key(s) can decrypt.
+
+Quick check:
+
+```bash
+rg -n 'recipient:' secrets/xbot.yaml
+```
+
+If an old recipient still appears there, that person can still decrypt the file.
+
 ## Key name gotcha in this repo
 
 The token key should be:
