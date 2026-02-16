@@ -21,7 +21,7 @@ in
 
   sops.secrets = {
     "xbot/token" = {
-      key = "teoloxide_token";
+      key = "teloxide_token";
       owner = "xbot";
       group = "xbot";
       mode = "0400";
@@ -94,4 +94,3 @@ in
     };
   };
 }
-
