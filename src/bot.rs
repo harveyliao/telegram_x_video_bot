@@ -1,7 +1,7 @@
 use anyhow::Result;
 use teloxide::prelude::*;
-use teloxide::types::InputFile;
 use teloxide::sugar::request::RequestReplyExt;
+use teloxide::types::{InputFile, UserId};
 
 use crate::{config::AppConfig, storage, ytdlp};
 
@@ -16,6 +16,16 @@ pub async fn run(cfg: AppConfig) -> Result<()> {
     teloxide::repl(bot, move |bot: Bot, msg: Message| {
         let cfg = cfg.clone();
         async move {
+            let sender_user_id = msg.from.as_ref().map(|user| user.id);
+            if !is_user_allowed(sender_user_id, &cfg.allowed_user_ids) {
+                log::debug!(
+                    "Ignoring message from unauthorized sender: chat_id={}, sender_user_id={:?}",
+                    msg.chat.id.0,
+                    sender_user_id.map(|id| id.0)
+                );
+                return Ok(());
+            }
+
             if let Some(text) = msg.text() {
                 if text.contains("twitter.com") || text.contains("x.com") {
                     let processing_msg = bot
@@ -24,12 +34,16 @@ pub async fn run(cfg: AppConfig) -> Result<()> {
                         .await?;
 
                     // 每个任务独立目录
-                    let (task_dir, _) = match storage::make_task_dir(&cfg.video_dir, msg.chat.id.0) {
+                    let (task_dir, _) = match storage::make_task_dir(&cfg.video_dir, msg.chat.id.0)
+                    {
                         Ok(v) => v,
                         Err(e) => {
-                            bot.send_message(msg.chat.id, format!("❌ Failed to create output folder: {e}"))
-                                .reply_to(&msg)
-                                .await?;
+                            bot.send_message(
+                                msg.chat.id,
+                                format!("❌ Failed to create output folder: {e}"),
+                            )
+                            .reply_to(&msg)
+                            .await?;
                             // 也可以尝试删掉 processing message（可选）
                             let _ = bot.delete_message(msg.chat.id, processing_msg.id).await;
                             return Ok(());
@@ -65,3 +79,39 @@ pub async fn run(cfg: AppConfig) -> Result<()> {
     Ok(())
 }
 
+fn is_user_allowed(
+    sender_user_id: Option<UserId>,
+    allowed_user_ids: &std::collections::HashSet<UserId>,
+) -> bool {
+    sender_user_id
+        .map(|id| allowed_user_ids.contains(&id))
+        .unwrap_or(false)
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashSet;
+
+    use super::*;
+
+    #[test]
+    fn allows_whitelisted_user_id() {
+        let mut allowed = HashSet::new();
+        allowed.insert(UserId(42));
+        assert!(is_user_allowed(Some(UserId(42)), &allowed));
+    }
+
+    #[test]
+    fn denies_non_whitelisted_user_id() {
+        let mut allowed = HashSet::new();
+        allowed.insert(UserId(42));
+        assert!(!is_user_allowed(Some(UserId(7)), &allowed));
+    }
+
+    #[test]
+    fn denies_when_sender_is_missing() {
+        let mut allowed = HashSet::new();
+        allowed.insert(UserId(42));
+        assert!(!is_user_allowed(None, &allowed));
+    }
+}

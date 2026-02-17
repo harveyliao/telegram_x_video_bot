@@ -2,11 +2,27 @@
 { config, pkgs, lib, ... }:
 
 let
+  cfg = config.services.xbot;
   videoDir = "/var/lib/xbot/videos";
+  allowedUserIdsCsv = lib.concatStringsSep "," (map toString cfg.allowedUserIds);
 in
 {
+  options.services.xbot.allowedUserIds = lib.mkOption {
+    type = lib.types.listOf lib.types.int;
+    default = [];
+    example = [ 123456789 987654321 ];
+    description = "Non-secret Telegram user IDs that are allowed to use the bot.";
+  };
+
   imports = [
     sops-nix.nixosModules.sops
+  ];
+
+  assertions = [
+    {
+      assertion = cfg.allowedUserIds != [];
+      message = "services.xbot.allowedUserIds must contain at least one Telegram user ID.";
+    }
   ];
 
   users.users.xbot = {
@@ -44,6 +60,7 @@ in
       TELOXIDE_TOKEN=${config.sops.placeholder."xbot/token"}
       COOKIE_FILE=${config.sops.secrets."xbot/cookie".path}
       VIDEO_DIR=${videoDir}
+      ALLOWED_USER_IDS=${allowedUserIdsCsv}
       MAX_CONCURRENT=2
       TIMEOUT_SECS=600
     '';

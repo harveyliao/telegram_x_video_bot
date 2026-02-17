@@ -9,6 +9,21 @@
 
 - SOPS on NixOS troubleshooting: `docs/sops-nixos-troubleshooting.md`
 
+## Sender allowlist config
+
+- The bot only processes links from Telegram users listed in `ALLOWED_USER_IDS`.
+- Use numeric Telegram user IDs (comma-separated), for example: `123456789,987654321`.
+- `ALLOWED_USER_IDS` is non-secret and can be kept in plain config.
+- Keep `TELOXIDE_TOKEN` and cookie secret material in SOPS.
+
+For NixOS module usage, set plain allowlist IDs in host config:
+
+```nix
+{
+  services.xbot.allowedUserIds = [ 123456789 987654321 ];
+}
+```
+
 ## Video archive
 
 Bot download output format:
