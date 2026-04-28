@@ -16,5 +16,6 @@ twitter.txt
 cookie.txt
 # nix-shell folder
 result
+.direnv/
 # secrets folder (sops)
 secrets

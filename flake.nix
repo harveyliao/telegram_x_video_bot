@@ -32,6 +32,26 @@
         }
       );
 
+      devShells = forAllSystems (system:
+        let pkgs = import nixpkgs { inherit system; };
+        in {
+          default = pkgs.mkShell {
+            packages = [
+              pkgs.cargo
+              pkgs.clippy
+              pkgs.ffmpeg
+              pkgs.openssl
+              pkgs.pkg-config
+              pkgs.rustc
+              pkgs.rustfmt
+              pkgs.yt-dlp
+            ];
+
+            PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
+          };
+        }
+      );
+
       overlays.default = final: prev: {
         xbot = self.packages.${final.system}.xbot;
       };
@@ -41,4 +61,3 @@
       };
     };
 }
-
