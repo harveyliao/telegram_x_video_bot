@@ -36,7 +36,7 @@ Operational files:
 
 - `scripts/xbot-video-archive.sh`: moves completed downloads to a long-term archive path.
 - `docs/sops-nixos-troubleshooting.md`: documents SOPS/age troubleshooting for NixOS deployments.
-- `.github/workflows/docker-build-push.yml` and `.github/workflows/prod.yml.bak`: older Docker image workflows. These do not appear to be the primary deployment path described by current repo guidance.
+- Historical Docker image workflows have been removed; current deployment guidance is NixOS/flake based.
 
 Host-side files reviewed outside this repository:
 
@@ -457,11 +457,11 @@ Every download task directory receives a copied `cookie.txt` with mode `0600`. T
 
 The NixOS service uses restrictive ownership, `UMask=0077`, and `/var/lib/xbot/videos` mode `0700`, which mitigates this on the host.
 
-### Docker Workflow Appears Stale Relative To Current Deployment
+### Docker Workflow Removed From Current Deployment
 
-There is a GitHub workflow for Docker image publishing and a backup workflow for Docker Hub, but the repository does not currently show a `Dockerfile` in the file list. `.dockerignore` also excludes `Dockerfile`, which is unusual for active Docker builds.
+The older GitHub workflows for Docker image publishing and Docker Hub backup deployment have been removed. The repository does not currently include a `Dockerfile`, and `.dockerignore` remains only as historical Docker build residue.
 
-Current project-specific instructions and docs emphasize NixOS flakes, SOPS, and the `xbot` system user, so Docker appears historical or incomplete.
+Current project-specific instructions and docs emphasize NixOS flakes, SOPS, and the `xbot` system user.
 
 ## Operational Model
 
@@ -532,7 +532,6 @@ Medium value:
 
 Lower priority:
 
-- Remove or refresh stale Docker workflow files if Docker deployment is no longer supported.
 - Expand `readme.md` with a concise end-to-end local development section.
 - Document how to discover a Telegram numeric user ID for allowlisting.
 
